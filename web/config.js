@@ -1,0 +1,52 @@
+// Drag & drop mode overrides
+Object.assign(CONFIG, {
+  // Pinch thresholds
+  PINCH_THRESHOLD: 24,
+  PINCH_RELEASE_THRESHOLD: 34,
+  PINCH_DRAG_RELEASE: 70,
+
+  // Expand / interaction
+  EXPAND_MARGIN: 40,
+  TWO_HAND_MIN_DIST: 150,
+  HIGHLIGHT_SCALE: 1.05,
+
+  // Fist
+  FIST_COOLDOWN_FRAMES: 45,
+  FIST_RING_FRAMES: 60,
+  LEFT_FIST_RING_FRAMES: 120,
+  FIST_RING_RADIUS: 28,
+
+  // Open hand
+  OPEN_HAND_COOLDOWN_FRAMES: 30,
+
+  // Box animation
+  OPEN_SPEED: 0.06,
+  CLOSE_SPEED: 0.08,
+  DISCARD_SPEED: 0.08,
+
+  // Open box dimensions
+  OPEN_BOX_W: 320,
+  OPEN_BOX_H: 240,
+
+  // Layout
+  MAX_BOXES: 20,
+  GRID_SIZE: 40,
+  TOGGLE_COOLDOWN_FRAMES: 20,
+
+  // Pinch dot
+  PINCH_DOT_RADIUS: 5,
+
+  // Ghost dots
+  GHOST_HIT_RADIUS: 20,
+  GHOST_DOT_RADIUS: 3,
+  GHOST_RING_RADIUS: 8,
+
+  // Onboarding
+  ONBOARDING_OPACITY: 0.7,
+  ONBOARDING_IMG_HEIGHT: 140,
+
+  // Legend
+  LEGEND_W: 160,
+  LEGEND_H: 70,
+  LEGEND_MARGIN: 40,
+});

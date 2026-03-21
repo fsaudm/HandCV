@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Experience",
+    "body": "Software Engineer\n@ Company Name\n2022 – Present",
+    "category": "experience"
+  },
+  {
+    "title": "Skills",
+    "body": "Python · CV · MediaPipe\nCreative Coding\nInteraction Design",
+    "category": "skills"
+  },
+  {
+    "title": "Projects",
+    "body": "TouchDesigner\nHand-gesture interactive\nresume / portfolio",
+    "category": "projects"
+  },
+  {
+    "title": "Education",
+    "body": "B.S. Computer Science\nUniversity Name\n2018 – 2022",
+    "category": "education"
+  },
+  {
+    "title": "Contact",
+    "body": "hello@example.com\ngithub.com/you\nlinkedin.com/in/you",
+    "category": "contact"
+  },
+  {
+    "title": "About",
+    "body": "the.poet.engineer\nBuilder of things\nthat move with hands",
+    "category": "about"
+  }
+]
