@@ -1,0 +1,17 @@
+name: Trigger Portfolio Sync
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch sync to fsaudm.github.io
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.PORTFOLIO_SYNC_TOKEN }}" \
+            https://api.github.com/repos/fsaudm/fsaudm.github.io/dispatches \
+            -d '{"event_type":"sync-handcv"}'

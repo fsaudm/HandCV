@@ -1,32 +1,32 @@
 [
   {
     "title": "Experience",
-    "body": "Software Engineer\n@ Company Name\n2022 – Present",
+    "body": "Data Scientist & Infra Manager\n@ DSRS - Gies College of Business\nJan 2025 – Present\n\nData Science Intern - Infra\nJan 2024 – Dec 2024\n\nProject Manager\n@ Capital Programs - F&S\nAug 2023 – Dec 2023",
     "category": "experience"
   },
   {
     "title": "Skills",
-    "body": "Python · CV · MediaPipe\nCreative Coding\nInteraction Design",
+    "body": "Python · R · SQL · Bash · JS\nML/AI · Deep Learning · NLP\nLLM Serving · RAG · Agents\nData Eng · ETL · Spark\nDocker · K8s · CI/CD\nAzure · AWS · HPC/GPU",
     "category": "skills"
   },
   {
     "title": "Projects",
-    "body": "TouchDesigner\nHand-gesture interactive\nresume / portfolio",
+    "body": "HandCV\nHand-gesture interactive\nresume powered by MediaPipe\n\nAshby Prize Finalist\nAgent-based AI image gen\nwith local + cloud LLMs",
     "category": "projects"
   },
   {
     "title": "Education",
-    "body": "B.S. Computer Science\nUniversity Name\n2018 – 2022",
+    "body": "M.S. Statistics - GPA 4.0\nUIUC · 2024\n\nM.S. Data Sci + Civil Eng\nUIUC · 2023 - GPA 4.0\n\nB.S. Civil Engineering\nUSFQ Ecuador · 2021 - 3.9",
     "category": "education"
   },
   {
     "title": "Contact",
-    "body": "hello@example.com\ngithub.com/you\nlinkedin.com/in/you",
+    "body": "gfs3@illinois.edu\ngithub.com/fsaudm\nlinkedin.com/in/faridsaud",
     "category": "contact"
   },
   {
     "title": "About",
-    "body": "the.poet.engineer\nBuilder of things\nthat move with hands",
+    "body": "Farid Saud\nData Scientist · ML Engineer\nBuilder of things\nthat move with hands",
     "category": "about"
   }
 ]

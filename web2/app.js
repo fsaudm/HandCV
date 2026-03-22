@@ -69,11 +69,10 @@ import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@m
   var selectedIndex = 0;
   var expandedBox = null;
 
-  // Dial tracking
-  var prevLeftAngle = null;
-  var accumulatedRotation = 0;
+  // Dial tracking — absolute tilt
   var smoothedAngle = null;
-  var dialCooldown = 0;
+  var baseAngle = null;       // angle when hand is "neutral" (captured on first frame)
+  var dialFrameAccum = 0;     // frames since last scroll step
 
   // Expand/collapse cooldowns
   var expandCooldown = 0;
@@ -150,48 +149,57 @@ import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@m
     }
 
     // ── Cooldown ticks ──
-    if (dialCooldown > 0) dialCooldown--;
     if (expandCooldown > 0) expandCooldown--;
     if (collapseCooldown > 0) collapseCooldown--;
 
     // ── State machine ──
     if (state === 'BROWSING') {
-      // LEFT HAND DIAL
-      if (leftHand && dialCooldown === 0) {
+      // LEFT HAND DIAL — absolute tilt
+      if (leftHand) {
         var rawAngle = G.getHandAngle(leftHand, W, H);
 
         if (smoothedAngle === null) {
           smoothedAngle = rawAngle;
-          prevLeftAngle = rawAngle;
+          baseAngle = rawAngle;
         } else {
-          // EMA smoothing with wrapping
           var diff = angleDiff(rawAngle, smoothedAngle);
           smoothedAngle = smoothedAngle + C.DIAL_SMOOTHING * diff;
         }
 
-        var delta = angleDiff(smoothedAngle, prevLeftAngle);
-        accumulatedRotation += delta;
-        prevLeftAngle = smoothedAngle;
+        // Tilt = deviation from the captured neutral angle
+        var tilt = angleDiff(smoothedAngle, baseAngle);
 
-        if (Math.abs(accumulatedRotation) > C.DIAL_CLICK_ANGLE) {
-          if (accumulatedRotation > 0) {
-            selectedIndex = (selectedIndex + 1) % shelfSlots.length;
-          } else {
-            selectedIndex = (selectedIndex - 1 + shelfSlots.length) % shelfSlots.length;
+        // Dead zone: no scrolling when hand is roughly centered
+        if (Math.abs(tilt) > C.DIAL_DEAD_ZONE) {
+          // Map tilt beyond dead zone to scroll speed
+          var excess = Math.abs(tilt) - C.DIAL_DEAD_ZONE;
+          var range = C.DIAL_MAX_TILT - C.DIAL_DEAD_ZONE;
+          var t = Math.min(excess / range, 1);
+          // Faster tilt = shorter interval between scroll steps
+          var interval = Math.round(C.DIAL_SCROLL_INTERVAL - (C.DIAL_SCROLL_INTERVAL - C.DIAL_MIN_INTERVAL) * t);
+          dialFrameAccum++;
+          if (dialFrameAccum >= interval) {
+            if (tilt > 0) {
+              selectedIndex = (selectedIndex + 1) % shelfSlots.length;
+            } else {
+              selectedIndex = (selectedIndex - 1 + shelfSlots.length) % shelfSlots.length;
+            }
+            dialFrameAccum = 0;
           }
-          accumulatedRotation = 0;
-          dialCooldown = C.DIAL_COOLDOWN_FRAMES;
+        } else {
+          dialFrameAccum = 0;
         }
 
-        // Draw dial indicator near left wrist
+        // Draw tilt indicator near left wrist
         var wristPos = G.lmPx(leftHand[G.WRIST], W, H);
-        var progress = Math.abs(accumulatedRotation) / C.DIAL_CLICK_ANGLE;
-        drawArc(ctx, wristPos.x, wristPos.y, C.DIAL_INDICATOR_RADIUS, Math.min(progress, 1),
-                C.GOLD_ACCENT, 2);
-      } else if (!leftHand) {
-        prevLeftAngle = null;
+        var progress = Math.min(Math.abs(tilt) / C.DIAL_MAX_TILT, 1);
+        var indicatorColor = Math.abs(tilt) > C.DIAL_DEAD_ZONE ? C.GOLD_ACCENT : grayRgb(80);
+        drawArc(ctx, wristPos.x, wristPos.y, C.DIAL_INDICATOR_RADIUS, progress,
+                indicatorColor, 2);
+      } else {
         smoothedAngle = null;
-        accumulatedRotation = 0;
+        baseAngle = null;
+        dialFrameAccum = 0;
       }
 
       // RIGHT HAND: open hand = expand selected box
@@ -258,9 +266,9 @@ import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@m
         expandedBox = null;
         state = 'BROWSING';
         // Reset dial state so it doesn't jump
-        prevLeftAngle = null;
         smoothedAngle = null;
-        accumulatedRotation = 0;
+        baseAngle = null;
+        dialFrameAccum = 0;
       }
     }
 
@@ -284,7 +292,7 @@ import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@m
       ctx.font = '16px sans-serif';
       ctx.fillStyle = grayRgb(160);
       var cy = H / 2;
-      ctx.fillText('tilt left hand to browse', W / 2, cy - 30);
+      ctx.fillText('tilt left hand to scroll', W / 2, cy - 30);
       ctx.fillText('open right hand to expand', W / 2, cy);
       ctx.fillText('close right fist to collapse', W / 2, cy + 30);
       ctx.font = '12px sans-serif';
@@ -307,7 +315,7 @@ import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@m
     drawCornerMarks(ctx, lx, ly, lw, lh, grayRgb(40), 6, 1);
     ctx.font = C.LEGEND_FONT_PX + 'px sans-serif';
     ctx.fillStyle = grayRgb(55);
-    ctx.fillText('tilt L hand     browse', lx + 8, ly + 16);
+    ctx.fillText('tilt L hand     scroll', lx + 8, ly + 16);
     ctx.fillText('R hand open     expand', lx + 8, ly + 30);
     ctx.fillText('R fist          close', lx + 8, ly + 44);
   }
