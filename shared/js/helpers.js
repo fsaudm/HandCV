@@ -35,9 +35,13 @@
     ctx.fill();
   }
 
-  function drawArc(ctx, cx, cy, r, progress, color, lineWidth) {
+  function drawArc(ctx, cx, cy, r, progress, color, lineWidth, ccw) {
     ctx.beginPath();
-    ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * progress, false);
+    if (ccw) {
+      ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 - 2 * Math.PI * progress, true);
+    } else {
+      ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * progress, false);
+    }
     ctx.strokeStyle = color;
     ctx.lineWidth = lineWidth;
     ctx.stroke();

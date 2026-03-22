@@ -1,7 +1,7 @@
 [
   {
     "title": "Experience",
-    "body": "Data Scientist & Infra Manager\n@ DSRS - Gies College of Business\nJan 2025 – Present\n\nData Science Intern - Infra\nJan 2024 – Dec 2024\n\nProject Manager\n@ Capital Programs - F&S\nAug 2023 – Dec 2023",
+    "body": "Data Scientist & Infra Manager\n@ DSRS - Gies College of Business\nJan 2025 - Present\nhttps://dsrs.illinois.edu\n\nData Science Intern - Infra\nJan 2024 - Dec 2024\n\nProject Manager\n@ Capital Programs - F&S\nAug 2023 - Dec 2023",
     "category": "experience"
   },
   {
@@ -11,7 +11,7 @@
   },
   {
     "title": "Projects",
-    "body": "HandCV\nHand-gesture interactive\nresume powered by MediaPipe\n\nAshby Prize Finalist\nAgent-based AI image gen\nwith local + cloud LLMs",
+    "body": "HandCV\nHand-gesture interactive\nresume powered by MediaPipe\nhttps://github.com/fsaudm/HandCV\n\nAshby Prize Finalist\nAgent-based AI image gen\nwith local + cloud LLMs",
     "category": "projects"
   },
   {
@@ -21,12 +21,12 @@
   },
   {
     "title": "Contact",
-    "body": "gfs3@illinois.edu\ngithub.com/fsaudm\nlinkedin.com/in/faridsaud",
+    "body": "gfs3@illinois.edu\nhttps://github.com/fsaudm\nhttps://linkedin.com/in/faridsaud",
     "category": "contact"
   },
   {
     "title": "About",
-    "body": "Farid Saud\nData Scientist · ML Engineer\nBuilder of things\nthat move with hands",
+    "body": "Farid Saud\nData Scientist · ML Engineer\nBuilder of things\nthat move with hands\nhttps://fsaudm.github.io",
     "category": "about"
   }
 ]

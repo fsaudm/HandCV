@@ -42,7 +42,7 @@
 
     ctx.font = CONFIG.SHELF_FONT_PX + 'px sans-serif';
     ctx.fillStyle = isActive ? CONFIG.GOLD_ACCENT : grayRgb(180);
-    ctx.fillText(this.title.slice(0, 6), this.x + 4, this.y + this.h - 6);
+    ctx.fillText(this.title, this.x + 4, this.y + this.h - 6);
   };
 
   window.Box = Box;

@@ -76,7 +76,7 @@
     // title
     var label, tx, ty, fontSize, v;
     if (op < 0.3) {
-      label = this.title.slice(0, 6);
+      label = this.title;
       tx = sx + 4; ty = sy + sh - 6;
       fontSize = C.SHELF_FONT_PX;
       v = Math.round(180 * scale);
