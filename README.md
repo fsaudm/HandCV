@@ -1,124 +1,72 @@
 # HandCV
 
-A hand-gesture interactive resume powered by MediaPipe. Browse, expand, and explore "resume" sections using hand gestures.
+A hand-gesture interactive resume powered by MediaPipe. Browse, expand, and explore resume sections using hand gestures captured via webcam. 
 
-![demo](photos/demo.gif)
-
-
-Project Structure:
-```
-HandCV/
-├── web2/                       # Browser dial mode (primary)
-│   ├── index.html
-│   ├── app.js
-│   ├── boxes.js
-│   ├── gestures.js
-│   ├── config.js
-│   └── style.css
-├── web/                        # Browser drag & drop
-│   ├── index.html
-│   ├── app.js
-│   ├── boxes.js
-│   ├── gestures.js
-│   ├── config.js
-│   ├── style.css
-│   └── resume.json
-├── experiments/                # Prototypes & research
-├── img/                        # Onboarding hand silhouettes
-├── resume.json                 # Resume data (shared)
-├── python-legacy/              # Original Python/OpenCV app (legacy)
-└── shared/                     # Shared assets (Python app)
-```
-
-
-## Features
-
-- 2 modes (as of now?):
-  - **Dial browsing** : rotate your left hand to browse sections, right fist→open to expand
-  - **Drag & drop** : pinch to grab, drag to move, two-hand pinch to open/close boxes
-- **Shelf system** : resume sections live on a top shelf; gesture to pull them onto the canvas
-- **Dynamic layout** : boxes are generated from `resume.json`; add or remove sections freely
-- **Hand skeleton overlay** : 21 landmarks + bone connections rendered in real-time
+**Live demo:** [fsaudm.github.io/handcv/](https://fsaudm.github.io/handcv/)
+*Note: Requires a modern browser with webcam access (Brave/Safari recommended)*.
 
 ## Quick Start
 
-### Web2 (dial mode)
-
+In dev:
 ```bash
-npx live-server web2/
+npx live-server . --open=dial/     # dial mode
+# npx live-server . --open=pinch/    # pinch mode
 ```
 
-### Web (drag & drop mode)
-
-```bash
-npx live-server web/
+Project structure:
+```
+HandCV/
+  dial/        - primary app (tilt to browse, open hand to expand)
+  pinch/       - alternate mode (pinch to grab, drag to place, kinda outdated)
+  resume/      - resume content as Markdown files
 ```
 
-Both require a modern browser with webcam access (Chrome/Edge recommended for WebGPU MediaPipe).
+## Dial Mode (`dial/`)
 
-## Implementations
-
-**Tech stack:** Vanilla JS, HTML5 Canvas, MediaPipe JS SDK
-
-### `web2/` - Browser Dial Mode
-
-Left hand acts as a rotary dial to browse sections, right hand opens/closes them.
+Left hand controls a tilt dial to browse sections. Right hand expands/collapses cards.
 
 | Gesture | Action |
 |---------|--------|
-| Rotate left hand (clockwise/counterclockwise) | Browse shelf sections |
-| Right hand fist-to-open | Expand selected section to center |
-| Bring both hands together | Collapse expanded section |
+| Open left hand + tilt | Browse shelf sections |
+| Close left hand | Pause browsing |
+| Open right hand | Expand selected card |
+| Close right hand | Collapse card |
+| Hover index finger on link | Open URL in new tab |
 
-**State machine:** `BROWSING` → `EXPANDING` → `EXPANDED` → `COLLAPSING` → `BROWSING`
+### Features
 
-### `web/` - Browser Drag & Drop
+- **Markdown resume content**: each section is a `.md` file in `resume/` with YAML frontmatter for the title. `resume/index.json` controls shelf order.
+- **Inline links**: use `[text](url)` in Markdown. Links render in blue and can be opened by hovering your index finger over them (a gold ring fills, then the link opens).
+- **Text diffusion effect**: text materializes from scrambled characters when a card expands, and scrambles out on collapse. Pluggable via `texteffects.js` (set `TEXT_EFFECT: 'none'` in config to disable).
+- **Headings and lists**: `## Heading` renders larger/brighter, `- item` renders as indented bullets, `---` draws a separator line.
+- **Visual hand cues**: both wrists show a ring indicator (gold when hand is open, dim when closed).
+- **Relative tilt with recalibration**: closing and reopening your left hand resets the neutral angle, so no awkward hand positions.
 
-A free-form drag-and-drop interaction model. Pinch shelf slots to spawn boxes, drag them anywhere on the canvas.
+### Resume Content
 
-| Gesture | Action |
-|---------|--------|
-| Pinch shelf slot + drag | Create a box |
-| Pinch box + drag | Move it |
-| Two-hand pinch near box | Open / close |
-| Open hand near closed box | Expand it |
-| Left fist (hold) | Reset all boxes |
-| Right hand open-to-fist | Collapse nearest open box |
+Resume sections live in `resume/*.md`. Each file has a title in frontmatter:
 
-## `resume.json`
+```markdown
+---
+title: Skills
+---
 
-All implementations load resume data from `resume.json`. Each section needs a `title`, `body`, and `category`:
+## Languages
+Python - R - SQL - Bash
+...
+```
+
+`resume/index.json` controls the shelf order:
 
 ```json
 [
-  {
-    "title": "Experience",
-    "body": "Software Engineer\n@ Company Name\n2022 – Present",
-    "category": "experience"
-  }
+  "about.md",
+  "experience.md",
+  "projects.md",
+  "skills.md"
 ]
 ```
 
-Add or remove sections freely, the shelf adapts automatically.
+## Pinch Mode (`pinch/`)
 
-## Architecture
-
-All implementations follow the same core loop:
-
-```
-Camera frame → MediaPipe hand detection → Gesture recognition → State update → Render
-```
-
-### Visual Design
-
-- Dark background (`#0F0F14`)
-- Accent (`#FFD700`) for highlights, indicators, hand labels
-- Corner-mark-only boxes (detached `+` corners, no full borders)
-- Smooth easing animations for open/close transitions
-- Hand skeleton overlay (21 landmarks + bone connections)
-- Onboarding hints on first launch
-
-
-## Legacy
-
-The original Python/OpenCV implementation lives in `python-legacy/`. It requires Python 3.11+ and `uv sync` to install deps. See that directory for details.
+Eventually document if revived...
