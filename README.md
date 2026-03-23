@@ -2,6 +2,10 @@
 
 A hand-gesture interactive resume powered by MediaPipe. Browse, expand, and explore resume sections using hand gestures captured via webcam. 
 
+<p align="center">
+  <img src="handcv.gif" alt="HandCV demo" width="600">
+</p>
+
 **Live demo:** [fsaudm.github.io/handcv/](https://fsaudm.github.io/handcv/)
 *Note: Requires a modern browser with webcam access (Brave/Safari recommended)*.
 

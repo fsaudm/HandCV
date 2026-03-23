@@ -1,3 +1,4 @@
 .DS_Store
 .worktree-*
 node_modules/
+*.mov

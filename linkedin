@@ -1,0 +1,10 @@
+I've been playing with [MediaPipe](https://github.com/google-ai-edge/mediapipe)'s hand tracking, its so fun. A lot of inspiration from the Generative Art community. For linkedin, the obvious use case was my own resume? so here it is:
+- Try it: https://fsaudm.github.io/handcv/
+- Repo/Code: https://github.com/fsaudm/HandCV
+
+No mouse, no keyboard, just gestures. Tilt your left hand to scroll through sections. Open your right hand to expand, close it to collapse. It's weird and fun. 
+
+Built it with vanilla JS + Canvas + MediaPipe, and a big dose of AI agents. Give it a try and let me know what you think! I have a few more ideas I want to try with this setup. In the mean time, Im out of here because I kinda hate linkedin 🙃.
+
+
+Got super inspired from [@the.poet.engineer](https://www.instagram.com/the.poet.engineer/)
