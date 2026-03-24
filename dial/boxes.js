@@ -103,6 +103,14 @@
     this.textEffect = TextEffects.get(C.TEXT_EFFECT);
   }
 
+  Box.prototype.updateContent = function(title, body, sectionIdx) {
+    this.title = title;
+    this.body = body || '';
+    this.bodyTokens = this.body ? tokenizeBody(this.body) : [];
+    this.sectionIdx = sectionIdx != null ? sectionIdx : -1;
+    this.linkHitboxes = [];
+  };
+
   Box.prototype.animateTo = function(tx, ty, tw, th) {
     this.sourceX = this.x; this.sourceY = this.y;
     this.sourceW = this.w; this.sourceH = this.h;

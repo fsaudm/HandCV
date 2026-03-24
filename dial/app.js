@@ -74,7 +74,7 @@ import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@m
 
   // ── State ──
   var shelfSlots = AppHelpers.buildShelf(sections, W);
-  var state = 'BROWSING'; // BROWSING | EXPANDING | DIFFUSING_IN | EXPANDED | DIFFUSING_OUT | COLLAPSING
+  var state = 'BROWSING'; // BROWSING | EXPANDING | DIFFUSING_IN | EXPANDED | SWITCHING_OUT | SWITCHING_IN | DIFFUSING_OUT | COLLAPSING
   var selectedIndex = 0;
   var expandedBox = null;
 
@@ -182,14 +182,11 @@ import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@m
     if (expandCooldown > 0) expandCooldown--;
     if (collapseCooldown > 0) collapseCooldown--;
 
-    // ── State machine ──
-    if (state === 'BROWSING') {
-      // LEFT HAND DIAL — relative tilt (recalibrates on fist release)
+    // ── Dial input (runs in BROWSING, EXPANDED, DIFFUSING_IN) ──
+    function tickDial() {
       var deadZone = C.DIAL_DEAD_ZONE_PCT * C.DIAL_MAX_TILT;
       if (leftHand && G.isOpenHand(leftHand, W, H)) {
         var rawAngle = G.getHandAngle(leftHand, W, H);
-
-        // Recalibrate if just released fist or first appearance
         if (smoothedAngle === null || dialWasPaused) {
           smoothedAngle = rawAngle;
           baseAngle = rawAngle;
@@ -203,30 +200,18 @@ import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@m
 
         if (Math.abs(tilt) > deadZone) {
           var dir = tilt > 0 ? 1 : -1;
-          // Reset step count on direction change
-          if (dir !== dialLastDir) {
-            dialStepCount = 0;
-            dialFrameAccum = 0;
-            dialLastDir = dir;
-          }
+          if (dir !== dialLastDir) { dialStepCount = 0; dialFrameAccum = 0; dialLastDir = dir; }
           var excess = Math.abs(tilt) - deadZone;
           var range = C.DIAL_MAX_TILT - deadZone;
           var t = Math.min(excess / range, 1);
           var interval;
-          if (dialStepCount === 0) {
-            interval = 0;
-          } else if (dialStepCount === 1) {
-            interval = C.DIAL_FIRST_DELAY;
-          } else {
-            interval = Math.round(C.DIAL_SCROLL_INTERVAL - (C.DIAL_SCROLL_INTERVAL - C.DIAL_MIN_INTERVAL) * t);
-          }
+          if (dialStepCount === 0) interval = 0;
+          else if (dialStepCount === 1) interval = C.DIAL_FIRST_DELAY;
+          else interval = Math.round(C.DIAL_SCROLL_INTERVAL - (C.DIAL_SCROLL_INTERVAL - C.DIAL_MIN_INTERVAL) * t);
           dialFrameAccum++;
           if (dialFrameAccum >= interval) {
-            if (tilt > 0) {
-              selectedIndex = (selectedIndex + 1) % shelfSlots.length;
-            } else {
-              selectedIndex = (selectedIndex - 1 + shelfSlots.length) % shelfSlots.length;
-            }
+            if (tilt > 0) selectedIndex = (selectedIndex + 1) % shelfSlots.length;
+            else selectedIndex = (selectedIndex - 1 + shelfSlots.length) % shelfSlots.length;
             dialFrameAccum = 0;
             dialStepCount++;
           }
@@ -235,14 +220,11 @@ import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@m
           dialStepCount = 0;
         }
 
-        // Draw tilt indicator - fills in the direction of tilt
         var wristPos = G.lmPx(leftHand[G.WRIST], W, H);
         var progress = Math.min(Math.abs(tilt) / C.DIAL_MAX_TILT, 1);
         var indicatorColor = Math.abs(tilt) > deadZone ? C.GOLD_ACCENT : grayRgb(80);
-        drawArc(ctx, wristPos.x, wristPos.y, C.DIAL_INDICATOR_RADIUS, progress,
-                indicatorColor, 1, tilt < 0);
+        drawArc(ctx, wristPos.x, wristPos.y, C.DIAL_INDICATOR_RADIUS, progress, indicatorColor, 1, tilt < 0);
       } else if (leftHand) {
-        // Fist detected - paused, show dim ring
         dialFrameAccum = 0; dialStepCount = 0;
         dialWasPaused = true;
         var wristPos = G.lmPx(leftHand[G.WRIST], W, H);
@@ -254,6 +236,11 @@ import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@m
       } else {
         resetDial();
       }
+    }
+
+    // ── State machine ──
+    if (state === 'BROWSING') {
+      tickDial();
 
       // RIGHT HAND: open hand = expand selected box
       if (rightHand && expandCooldown === 0) {
@@ -287,6 +274,15 @@ import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@m
       }
 
     } else if (state === 'EXPANDED') {
+      var prevIndex = expandedBox.sectionIdx;
+      tickDial();
+
+      // If dial moved to a different section, switch content
+      if (selectedIndex !== prevIndex) {
+        expandedBox.startDiffusion(false);
+        state = 'SWITCHING_OUT';
+      }
+
       var shouldCollapse = collapseCooldown === 0 && (
         (rightHand && !G.isOpenHand(rightHand, W, H)) ||
         (leftHand && rightHand && G.areHandsTogether(leftHand, rightHand, W, H))
@@ -349,6 +345,28 @@ import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@m
       if (!linkHit) {
         linkHoldFrames = 0;
         hoveredLinkUrl = null;
+      }
+
+    } else if (state === 'SWITCHING_OUT') {
+      tickDial();
+      expandedBox.tick();
+      if (expandedBox.diffPhase === 'faded') {
+        // Swap to whatever is currently selected (may have changed during fade)
+        var sec = sections[selectedIndex];
+        expandedBox.updateContent(sec.title, sec.body, selectedIndex);
+        expandedBox.startDiffusion(true);
+        state = 'SWITCHING_IN';
+      }
+
+    } else if (state === 'SWITCHING_IN') {
+      tickDial();
+      expandedBox.tick();
+      // If dial moved again during reveal, start another switch
+      if (selectedIndex !== expandedBox.sectionIdx) {
+        expandedBox.startDiffusion(false);
+        state = 'SWITCHING_OUT';
+      } else if (expandedBox.diffPhase === 'revealed') {
+        state = 'EXPANDED';
       }
 
     } else if (state === 'DIFFUSING_OUT') {
