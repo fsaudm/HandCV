@@ -40,7 +40,7 @@ window.CONFIG = {
   HAND_BONE_THICKNESS: 1,
 
   // Dial - relative tilt with recalibration on fist release
-  DIAL_DEAD_ZONE_PCT: 0.25,   // fraction of MAX_TILT before scrolling starts
+  DIAL_DEAD_ZONE_PCT: 0.40,   // fraction of MAX_TILT before scrolling starts
   DIAL_MAX_TILT: 45,          // degrees at which scroll speed maxes out
   DIAL_FIRST_DELAY: 50,       // frames to wait after first step before continuous scroll (~0.8s)
   DIAL_SCROLL_INTERVAL: 30,   // frames between scroll steps at gentle tilt
